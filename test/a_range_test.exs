@@ -26,9 +26,6 @@ defmodule ARangeTest do
       [end_code_point] = String.to_charlist(end_value)
 
       with [code_point] <- String.to_charlist(letter) do
-        # This limits us to A to Z ranges which is not too good. to make it more
-        # general we would need to know the start and end values that the range was
-        # instantiated with.
         code_point <= end_code_point && code_point >= start_code_point &&
           rem(code_point - start_code_point, 1) == 0
       else
@@ -48,8 +45,6 @@ defmodule ARangeTest do
       end
     end
 
-    @doc """
-    """
     @impl true
     def subset(start, count) do
       [code_point] = String.to_charlist(start)
