@@ -24,6 +24,11 @@ def my_fun(value) do
 end
 ```
 
+<!--
+Can we do some kind of pattern thing with this library...
+A standardised pattern to match on for inclusion.
+Suppose we should read the paper though.
+-->
 
 ### Examples
 
