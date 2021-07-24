@@ -60,13 +60,6 @@ defmodule ARange do
       ...>       start_code_point - end_code_point + 1
       ...>     end
       ...>   end
-      ...>   @impl true
-      ...>   def subset(start, count) do
-      ...>     [code_point] = String.to_charlist(start)
-      ...>     for point <- code_point..(code_point + count) do
-      ...>       point
-      ...>     end
-      ...>   end
       ...> end)
       ...> letters = ARange.new(%{start: "a", end: "z", type: Letter})
       ...> ARange.next(letters) |> ARange.next() |> ARange.next() |> ARange.current_value()
@@ -98,12 +91,6 @@ defmodule ARange do
   given range
   """
   @callback count(any(), any()) :: any()
-
-  @doc """
-  Accepts the a starting value and a count of total elements and should return a list of
-  count elements taken from the range (starting at the starting value).
-  """
-  @callback subset(integer(), integer()) :: any()
 
   @doc """
   Defines a new ARange struct with the given start and end values. Type should be a module
@@ -170,17 +157,6 @@ defmodule ARange do
     range.type.count(range.start, range.end)
   end
 
-  @doc """
-  """
-  # duhhhhhh if start index is less than zero subtract
-  def subset(range, start_index, count) do
-    start_value =
-      range.type.at(range.start, range.end, start_index)
-      |> IO.inspect(limit: :infinity, label: "")
-
-    range.type.subset(start_value, count)
-  end
-
   # We could also add disjoint?/2 like Range has in Elixir.
 
   defimpl Enumerable do
@@ -205,13 +181,6 @@ defmodule ARange do
       end
     end
 
-    def slice(range) do
-      slice_fun = fn start, count ->
-        ARange.subset(range, start, count)
-      end
-
-      {:ok, ARange.count(range), slice_fun}
-      # {:error, __MODULE__}
-    end
+    def slice(_range), do: {:error, __MODULE__}
   end
 end

@@ -44,32 +44,6 @@ defmodule ARangeTest do
         start_code_point - end_code_point + 1
       end
     end
-
-    @impl true
-    def subset(start_value, count) do
-      [code_point] = String.to_charlist(start_value)
-      # are we counting forward or not...
-      # Should we like wrap if the range is A <-> D?
-      for point <- code_point..(code_point + count - 1) do
-        <<point>>
-      end
-    end
-
-    # @impl true
-    def at(start, end_value, index) do
-      # we need to implement wrap around.....
-      # we could do that with modulo of the length
-      [start_code_point] = String.to_charlist(start)
-      [end_code_point] = String.to_charlist(end_value)
-
-      if start_code_point <= end_code_point do
-        wrapped_index = Integer.mod(index, end_code_point - start_code_point)
-        <<start_code_point + wrapped_index>>
-      else
-        wrapped_index = Integer.mod(index, start_code_point - end_code_point)
-        <<start_code_point - wrapped_index>>
-      end
-    end
   end
 
   describe "new/1" do
@@ -173,9 +147,9 @@ defmodule ARangeTest do
   describe "slice/1" do
     test "we can get a subset of the range" do
       letters = ARange.new(%{start: "a", end: "g", type: Letterz})
-      # assert Enum.slice(letters, 2..50) == ["c", "d", "e", "f", "g"]
-      # assert Enum.slice(letters, 0..1) == ["a", "b"]
-      # assert Enum.slice(letters, 1..-1) == ["b", "c", "d", "e", "f", "g"]
+      assert Enum.slice(letters, 2..50) == ["c", "d", "e", "f", "g"]
+      assert Enum.slice(letters, 0..1) == ["a", "b"]
+      assert Enum.slice(letters, 1..-1) == ["b", "c", "d", "e", "f", "g"]
       assert Enum.slice(letters, -1..-1) == ["g"]
     end
   end
