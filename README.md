@@ -1,6 +1,6 @@
 # ARange
 
-WIP - don't use, yet.
+Alpha version - implementation may change.
 
 Ranges in elixir have some limitations. Right now they are only for integer values and you can't make ranges for letters for example. This library lets you define any arbitrary range and have enumerable work with it automatically.
 
