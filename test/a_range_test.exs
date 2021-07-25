@@ -56,6 +56,18 @@ defmodule ARangeTest do
       letters = ARange.new(%{start: "a", end: "b", type: Letterz})
       assert letters == %ARange{current_value: "a", end: "b", type: Letterz, start: "a"}
     end
+
+    test "you can use a map for the type" do
+      type = %{
+        next: fn _ -> "b" end,
+        previous: fn _ -> "a" end,
+        included?: fn _, _, _ -> true end,
+        count: fn _ -> 1 end
+      }
+
+      letters = ARange.new(%{start: "a", end: "b", type: type})
+      assert letters == %ARange{current_value: "a", end: "b", start: "a", type: type}
+    end
   end
 
   describe "next/1" do
@@ -153,4 +165,6 @@ defmodule ARangeTest do
       assert Enum.slice(letters, -1..-1) == ["g"]
     end
   end
+
+  # Add more tests for the actual Enumerable fns probs.
 end

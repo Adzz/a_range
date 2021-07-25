@@ -109,9 +109,15 @@ defmodule ARange do
     struct!(__MODULE__, Map.put(args, :current_value, start))
   end
 
-  # def new(%{start: start, end: end_value, type: type} = args) do
-  #   %{next: next, previous: previous, included?: included?, count: count, subset: subset}
-  # end
+  def new(
+        %{
+          start: start,
+          end: _end_value,
+          type: %{next: _, previous: _, included?: _, count: _}
+        } = args
+      ) do
+    struct!(__MODULE__, Map.put(args, :current_value, start))
+  end
 
   @doc """
   """
@@ -154,7 +160,17 @@ defmodule ARange do
   @doc """
   """
   def count(range) do
-    range.type.count(range.start, range.end)
+    type_fun(range, :count, [range.start, range.end])
+  end
+
+  # These allow Type to be a module implementing the behaviour
+  # or a map with fns in it, so you could do a struct.
+  defp type_fun(%{type: type}, fun, args) when is_atom(type) do
+    apply(type, fun, args)
+  end
+
+  defp type_fun(%{type: type = %{}}, fun, args) do
+    Map.get(type, fun).(args)
   end
 
   # We could also add disjoint?/2 like Range has in Elixir.
@@ -181,6 +197,7 @@ defmodule ARange do
       end
     end
 
+    # This will iterate through the range, could allow optimizing later.
     def slice(_range), do: {:error, __MODULE__}
   end
 end
