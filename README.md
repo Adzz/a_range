@@ -32,12 +32,6 @@ Accepts any given value and should return whether or not the value exists in the
 Accepts the first and last value in the range and returns how many elements are in the given range
 """
 @callback count(any(), any()) :: any()
-
-@doc """
-Accepts the a starting value and a count of total elements and should return a list of count
-elements taken from the range (starting at the starting value).
-"""
-@callback subset(integer(), integer()) :: any()
 ```
 
 see the examples below
@@ -48,7 +42,7 @@ see the examples below
 The following shows how you can create a Range of English language letters which increment by 1 codepoint.
 
 ```elixir
-defmodule Letter do
+defmodule Letterz do
   @behaviour ARange
   @moduledoc """
   Enables creation of ranges of letters which increment by 1 codepoint.
@@ -88,15 +82,6 @@ defmodule Letter do
       end_code_point - start_code_point + 1
     else
       start_code_point - end_code_point + 1
-    end
-  end
-
-  @impl true
-  def subset(start, count) do
-    [code_point] = String.to_charlist(start)
-
-    for point <- code_point..(code_point + count) do
-      point
     end
   end
 end
