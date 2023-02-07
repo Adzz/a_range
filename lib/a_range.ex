@@ -82,13 +82,13 @@ defmodule ARange do
   @callback previous(any()) :: any()
 
   @doc """
-  Accepts any given value and should return whether or not the value exists in the range
+  Accepts any given value and should return whether or not the value exists in the range.
   """
   @callback included?(any(), any(), any()) :: any()
 
   @doc """
   Accepts the first and last value in the range and returns how many elements are in the
-  given range
+  given range.
   """
   @callback count(any(), any()) :: any()
 
@@ -122,12 +122,20 @@ defmodule ARange do
   @doc """
   """
   def next(range) do
+    # Values in ranges are not repeated. Is this always true? what about
+    # numbers of pi or something. I think we can make it true and use streams
+    # otherwise.
+
+    # current = ARange.next(range.of)
+
     current = current_value(range)
     # If we do this we can't have dup values which makes sense for a range I think.
     if current == range.end do
       range
     else
-      next_value = range.type.next(current)
+      # Aside: we have gone for behaviours, we could also have data structures that
+      # encapsulate the behaviour we are looking for.
+      next_value = apply_type_fun(range, :next, [current])
       %{range | current_value: next_value}
     end
   end
@@ -140,7 +148,7 @@ defmodule ARange do
     if current == range.start do
       range
     else
-      prev_value = range.type.previous(current)
+      prev_value = apply_type_fun(range, :previous, [current])
       %{range | current_value: prev_value}
     end
   end
@@ -148,7 +156,7 @@ defmodule ARange do
   @doc """
   """
   def included?(range, value) do
-    range.type.included?(range.start, range.end, value)
+    apply_type_fun(range, :included?, [range.start, range.end, value])
   end
 
   @doc """
@@ -160,16 +168,18 @@ defmodule ARange do
   @doc """
   """
   def count(range) do
-    type_fun(range, :count, [range.start, range.end])
+    apply_type_fun(range, :count, [range.start, range.end])
   end
 
   # These allow Type to be a module implementing the behaviour
-  # or a map with fns in it, so you could do a struct.
-  defp type_fun(%{type: type}, fun, args) when is_atom(type) do
+  # or a map with fns in it, so you could do a struct. We could also add
+  # protocols into the mix by making the behaviour a protocol and then
+  # dispatching that way I suppose.
+  defp apply_type_fun(%{type: type}, fun, args) when is_atom(type) do
     apply(type, fun, args)
   end
 
-  defp type_fun(%{type: type = %{}}, fun, args) do
+  defp apply_type_fun(%{type: type = %{}}, fun, args) do
     Map.get(type, fun).(args)
   end
 
@@ -197,7 +207,9 @@ defmodule ARange do
       end
     end
 
-    # This will iterate through the range, could allow optimizing later.
+    # This will iterate through the range, could allow optimizing later, but it's a little
+    # unclear how. Presumably we would have to let the type of range determine when / if
+    # / how we could optimize it.
     def slice(_range), do: {:error, __MODULE__}
   end
 end

@@ -46,6 +46,14 @@ defmodule ARangeTest do
     end
   end
 
+  # If Letterz is a struct then we can use protocols, but we need a way to
+  # say "it needs to be a struct with start and end keys". This would also
+  # mean the user could sneak in extra info in the type by having extra keys.
+  # which is interesting. Vs the quite rigid behaviour approach.
+  # ARange.new(%Letterz{start: "a", end: "b"})
+  # %ARange{of: %Letterz{start: "a", end: "b"}, current_value: "a"}
+  # ARange.of(%Letterz{start: "a", end: "b"})
+
   describe "new/1" do
     test "current value is set to the start value" do
       letters = ARange.new("a", "b", Letterz)
